@@ -1,6 +1,6 @@
 var math = require("mathjs");
 
-function createNetworkTopology(gpuCount) {
+export default function createNetworkTopology(gpuCount) {
   var portsPerSwitch = 64;
 
   if (gpuCount > portsPerSwitch * (portsPerSwitch / 2)) {
