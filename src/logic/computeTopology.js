@@ -1,4 +1,4 @@
-var math = require("mathjs");
+import { ceil, min, range } from "mathjs";
 
 export default function createNetworkTopology(gpuCount) {
   var portsPerSwitch = 64;
@@ -7,9 +7,12 @@ export default function createNetworkTopology(gpuCount) {
     throw new Error("Too many GPUs for this topology");
   }
 
-  var leafCount = math.ceil(gpuCount / (portsPerSwitch / 2));
+  var leafCount = ceil(gpuCount / (portsPerSwitch / 2));
 
-  var spineCount = math.ceil(gpuCount / portsPerSwitch);
+  var spineCount = ceil(gpuCount / portsPerSwitch);
+  if (leafCount < 2) {
+    spineCount = 0;
+  }
 
   // init a few arrays
   var leafSouthBound = [];
@@ -29,13 +32,13 @@ export default function createNetworkTopology(gpuCount) {
     spineConnections.push([]);
   }
 
-  var gpusPerLeaf = math.ceil(gpuCount / leafCount);
+  var gpusPerLeaf = ceil(gpuCount / leafCount);
 
   // calculate compute connections
   for (var i = 1; i <= leafCount; i++) {
     for (
       var j = gpusPerLeaf * (i - 1) + 1;
-      j <= math.min(gpusPerLeaf * i, gpuCount);
+      j <= min(gpusPerLeaf * i, gpuCount);
       j++
     ) {
       leafSouthBound[i].push({
@@ -50,23 +53,25 @@ export default function createNetworkTopology(gpuCount) {
       leafNorthBound[i].push({
         spine: j,
         cableCount: gpusPerLeaf / spineCount,
-        leafPorts: math
-          .range((i - 1) * (portsPerSwitch / 2) + 1, i * (portsPerSwitch / 2))
-          .toArray(),
+        leafPorts: range(
+          (i - 1) * (portsPerSwitch / 2) + 1,
+          i * (portsPerSwitch / 2)
+        ).toArray(),
         spinePort: i,
       });
-      spineConnections[j].push = {
+      spineConnections[j].push({
         leaf: i,
         cableCount: gpusPerLeaf / spineCount,
         spinePort: i,
-        leafPorts: math
-          .range((i - 1) * (portsPerSwitch / 2) + 1, i * (portsPerSwitch / 2))
-          .toArray(),
-      };
+        leafPorts: range(
+          (i - 1) * (portsPerSwitch / 2) + 1,
+          i * (portsPerSwitch / 2)
+        ).toArray(),
+      });
     }
   }
-  console.log(leafSouthBound);
-  console.log(leafNorthBound);
+  // console.log(leafSouthBound);
+  // console.log(leafNorthBound);
   return {
     leafSouthBound: leafSouthBound,
     leafNorthBound: leafNorthBound,

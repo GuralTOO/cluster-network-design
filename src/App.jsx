@@ -3,6 +3,8 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import NetworkVisualization from './components/NetworkVisualization';
+import NetworkVisualizationD3Tree from './components/NetWorkVisualizationD3Tree';
+import NetworkVisualizationSVG from './components/NetworkVisualizationSVG';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -11,7 +13,9 @@ function App() {
 
     <div className="App">
       <h1>GPU Network Topology</h1>
-      <NetworkVisualization gpuCount={256} />
+      <div style={{display: 'flex', background: "#F2EFF3"}}>
+        <NetworkVisualization gpuCount={256} />
+      </div>
     </div>
 
 
